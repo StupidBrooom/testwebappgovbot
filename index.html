@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Цифровой доход</title>
+  <style>
+    body { font-family: sans-serif; background: #eaf4ff; margin: 0; padding: 20px; }
+    .container { max-width: 500px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); display: none; box-sizing: border-box; }
+    h1 { font-size: 20px; margin-bottom: 10px; }
+    p { margin-bottom: 20px; }
+    button, select, input[type="text"] {
+      width: 100%;
+      padding: 15px;
+      font-size: 16px;
+      margin-bottom: 10px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      box-sizing: border-box;
+    }
+    .blue { background: #2563eb; color: white; }
+    .green { background: #22c55e; color: white; }
+    .gray { background: #e5e7eb; color: #111827; }
+    .gray.active { background: #22c55e; color: white; }
+    input[type="text"] { border: 1px solid #d1d5db; }
+    .note { font-size: 14px; color: #6b7280; }
+    ul { padding-left: 20px; margin-top: 10px; }
+    li { margin-bottom: 6px; }
+  </style>
+</head>
+<body>
+  <div class="container" id="screen1" style="display:block">
+    <h1>💼 Цифровой доход, подходящий именно тебе</h1>
+    <p>В 2025 году появилось более 40 способов легального удалённого заработка. Проверь, какие доступны лично тебе.</p>
+    <button class="blue" onclick="nextScreen(2)">🔍 Узнать мои варианты</button>
+  </div>
+
+  <div class="container" id="screen2">
+    <h1>Выберите свой статус</h1>
+    <button class="blue" onclick="selectStatus('Самозанятый')">✅ Самозанятый</button>
+    <button class="blue" onclick="selectStatus('Студент')">👨‍💻 Студент</button>
+    <button class="blue" onclick="selectStatus('Родитель')">🧑‍🤝‍🧑 Родитель</button>
+    <button class="blue" onclick="selectStatus('Безработный')">🧍‍♂️ Безработный</button>
+    <button class="blue" onclick="selectStatus('По региону')">📍 По региону</button>
+  </div>
+
+  <div class="container" id="screen3">
+    <h1>Укажите ваш текущий доход в рублях (в месяц)</h1>
+    <input type="text" id="income" placeholder="Например, 25 000" oninput="formatInput(this)" />
+    <button id="continueBtn" class="gray" onclick="nextScreen(4)" disabled>Продолжить</button>
+  </div>
+
+  <div class="container" id="screen4">
+    <h1>Подтвердите данные</h1>
+    <p id="confirmation"></p>
+    <button class="green" onclick="nextScreen(5)">Перейти к подборке</button>
+  </div>
+
+  <div class="container" id="screen5">
+    <h1>🎯 Подборка доступных способов дохода готова</h1>
+    <p>Мы учли ваш статус и уровень дохода. Чтобы получить персональный доступ — подтвердите личность через Госуслуги.</p>
+    <button class="blue">🔐 Войти через Госуслуги</button>
+    <div class="note">
+      <p>Зачем это нужно:</p>
+      <ul style="list-style: none; padding-left: 0;">
+        <li>✔ Исключаем фейковые заявки</li>
+        <li>✔ Подбираем точные меры поддержки</li>
+        <li>✔ Учитываем возраст, регион и подтверждённый статус</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    let userStatus = '';
+
+    function nextScreen(screenNumber) {
+      document.querySelectorAll('.container').forEach(el => el.style.display = 'none');
+      document.getElementById('screen' + screenNumber).style.display = 'block';
+
+      if (screenNumber === 4) {
+        const raw = document.getElementById('income').value.replace(/\D/g, '');
+        const formattedIncome = new Intl.NumberFormat('ru-RU').format(raw);
+        document.getElementById('confirmation').textContent = `Вы выбрали: ${userStatus}, доход: ${formattedIncome} ₽/мес`;
+      }
+    }
+
+    function selectStatus(status) {
+      userStatus = status;
+      nextScreen(3);
+    }
+
+    function formatInput(input) {
+      const raw = input.value.replace(/\D/g, '');
+      const btn = document.getElementById('continueBtn');
+      if (raw) {
+        input.value = new Intl.NumberFormat('ru-RU').format(raw);
+        btn.disabled = false;
+        btn.classList.add('active');
+      } else {
+        input.value = '';
+        btn.disabled = true;
+        btn.classList.remove('active');
+      }
+    }
+  </script>
+</body>
+</html>
